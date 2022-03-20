@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
 
-public class SceneManager : MonoBehaviour
+public class GamestateManager : MonoBehaviour
 {
     [SerializeField]
     private Button m_startButton;
