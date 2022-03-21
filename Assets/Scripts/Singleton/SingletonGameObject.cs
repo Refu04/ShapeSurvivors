@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//DontDestroyOnLoadなオブジェクトに付ける
-public class SingletonGameObject : MonoBehaviour
+//シングルトンなクラスに継承させる
+public class SingletonGameObject<T> : MonoBehaviour where T :SingletonGameObject<T>
 {
-    private static GameObject mInstance;
+    private static T mInstance;
 
-    public static GameObject Instance
+    public static T Instance
     {
         get
         {
@@ -21,13 +21,20 @@ public class SingletonGameObject : MonoBehaviour
         if (mInstance == null)
         {
             //無ければ破壊されないようにし、登録
-            DontDestroyOnLoad(gameObject);
-            mInstance = gameObject;
+            DontDestroyOnLoad(this.gameObject);
+            mInstance = this as T;
+            mInstance.Init();
         }
         else
         {
             //既にインスタンスがあれば破壊する
-            Destroy(gameObject);
+            Destroy(this.gameObject);
         }
+    }
+
+    //派生クラス用のAwake
+    protected virtual void Init()
+    {
+
     }
 }

@@ -7,10 +7,12 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
 
-public class GamestateManager : MonoBehaviour
+public class GameManager : SingletonGameObject<GameManager>
 {
-    
+    //UI
+    //ゲームスタートボタン
     private Button m_startButton;
+    
 
     async void Start()
     {
@@ -25,6 +27,11 @@ public class GamestateManager : MonoBehaviour
         Debug.Log("Titleシーン初期化");
         m_startButton = GameObject.FindGameObjectWithTag("StartButton").GetComponent<Button>();
        
+    }
+
+    public void InitializeGame()
+    {
+        
     }
 
     public async UniTask GameFlow(CancellationToken cts)
@@ -53,6 +60,8 @@ public class GamestateManager : MonoBehaviour
         //Gameシーンを読み込む
         await SceneManager.LoadSceneAsync("Game");
         Debug.Log("Gameシーンがロードされた");
+        //Gameシーンの初期化
+        InitializeGame();
         //ゲームが終わるまで待つ
         await UniTask.Delay(2000);
     }
