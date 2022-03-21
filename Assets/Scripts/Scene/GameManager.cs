@@ -11,27 +11,16 @@ public class GameManager : SingletonGameObject<GameManager>
 {
     //UI
     //ゲームスタートボタン
-    private Button m_startButton;
-    
+    private Button _startButton;
+
+    //プレイヤーのインスタンス
+    private PlayerCore _playerCore;
 
     async void Start()
     {
         // CancellationTokenSourceを生成
         var cts = new CancellationTokenSource();
         await GameFlow(cts.Token);
-    }
-
-    public void InitializeTitle()
-    {
-        //スタートボタンの割当
-        Debug.Log("Titleシーン初期化");
-        m_startButton = GameObject.FindGameObjectWithTag("StartButton").GetComponent<Button>();
-       
-    }
-
-    public void InitializeGame()
-    {
-        
     }
 
     public async UniTask GameFlow(CancellationToken cts)
@@ -51,7 +40,7 @@ public class GameManager : SingletonGameObject<GameManager>
         //Titleシーンの初期化
         InitializeTitle();
         //ゲームスタートボタンが押されるまで待つ
-        await m_startButton.OnClickAsync(cts);
+        await _startButton.OnClickAsync(cts);
         
     }
 
@@ -62,8 +51,25 @@ public class GameManager : SingletonGameObject<GameManager>
         Debug.Log("Gameシーンがロードされた");
         //Gameシーンの初期化
         InitializeGame();
+        //Playerが死亡するまで待つ
+        await UniTask.WaitUntil(() => _playerCore.HP <= 0);
+        //リザルト表示
+
         //ゲームが終わるまで待つ
-        await UniTask.Delay(2000);
+    }
+
+    public void InitializeTitle()
+    {
+        //スタートボタンの割当
+        Debug.Log("Titleシーン初期化");
+        _startButton = GameObject.FindGameObjectWithTag("StartButton").GetComponent<Button>();
+
+    }
+
+    public void InitializeGame()
+    {
+        Debug.Log("Gameシーン初期化");
+        _playerCore = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCore>();
     }
 }
 
