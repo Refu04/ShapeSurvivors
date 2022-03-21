@@ -30,23 +30,45 @@ public class PlayerCore : MonoBehaviour
     //入力イベント
     private InputEventProvider _inputEventProvider;
 
+    //初期化が完了したことを表すUniTask
+    public UniTask InitializedAsync => _utc.Task;
+    private readonly UniTaskCompletionSource _utc = new UniTaskCompletionSource();
+
     async void Start()
     {
-        _inputEventProvider = GetComponent<InputEventProvider>();
+        //初期化処理
+        await InitializeAsync();
 
         // CancellationTokenSourceを生成
-        var cts = new CancellationTokenSource();
+        var token = this.GetCancellationTokenOnDestroy();
 
         while (true)
         {
-            await Move(cts);
+            await Move(token);
         }
     }
 
-    async UniTask Move(CancellationTokenSource cts)
+    //初期化
+    private async UniTask InitializeAsync()
+    {
+        _inputEventProvider = GetComponent<InputEventProvider>();
+
+        await UniTask.Yield();
+
+        //初期化が終わったらUniTaskを完了させる
+        _utc.TrySetResult();
+    }
+
+    private void OnDestroy()
+    {
+        //破壊されたらキャンセル
+        _utc.TrySetCanceled();
+    }
+
+    async UniTask Move(CancellationToken token)
     {
         //FixedUpdateに切り替える
-        await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cts.Token);
+        await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
 
         //移動処理
         _inputEventProvider.MoveDirection
