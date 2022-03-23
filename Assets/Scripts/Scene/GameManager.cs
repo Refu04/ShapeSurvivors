@@ -60,6 +60,7 @@ public class GameManager : SingletonGameObject<GameManager>
         //リザルト表示
 
         //ゲームが終わるまで待つ
+
     }
 
     public async UniTask InitializeTitle()
