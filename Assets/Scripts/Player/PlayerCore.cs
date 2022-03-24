@@ -102,19 +102,22 @@ public class PlayerCore : MonoBehaviour
 
     async UniTask RapidFire(CancellationToken token)
     {
-        while(true)
+        while (true)
         {
-            await UniTask.Delay(100);
-            Shot(token).Forget();
+            await UniTask.Delay(300);
+            for (int i = 0; i < _level; i++)
+            {
+                Shot(token, i).Forget();
+            }
         }
     }
 
-    async UniTask Shot(CancellationToken token)
+    async UniTask Shot(CancellationToken token, int num)
     {
         //ƒv[ƒ‹‚©‚ç’e‚ð‚P‚ÂŽæ“¾
         var bullet = _bulletPool.Rent();
         //’e‚ðŒ‚‚Â
-        bullet.Shot(transform.position, transform.localEulerAngles);
+        bullet.Shot(transform.position, new Vector3(0, 0, 360 / _level * num));
         //’e‚ªŽ€‚Ê‚Ì‚ð‘Ò‚Â
         await bullet.deadAsync;
         //’e‚Ì•Ô‹p
