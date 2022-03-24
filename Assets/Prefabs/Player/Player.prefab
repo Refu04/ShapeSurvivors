@@ -110,5 +110,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _level: 0
   _hp: 100
-  _moveSpeed: 0.0001
+  _moveSpeed: 0.1
   _bullet: {fileID: -3313956863981532910, guid: 83c922661a552fd428da8f31a9aa93b0, type: 3}

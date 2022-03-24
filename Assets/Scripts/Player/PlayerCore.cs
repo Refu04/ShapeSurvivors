@@ -97,18 +97,7 @@ public class PlayerCore : MonoBehaviour
         await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
 
         //ˆÚ“®ˆ—
-        _inputEventProvider.MoveDirection
-            //‰Šú’l‚Í–³Ž‹‚·‚é
-            .Skip(1)
-            //ˆÚ“®
-            .Subscribe(x => transform.position += x * _moveSpeed);
-
-        //ˆÚ“®—Ê‚ª‚O‚Å–³‚¯‚ê‚Î
-        if(_inputEventProvider.MoveDirection.Value != Vector3.zero)
-        {
-            //ˆÚ“®‚·‚é‚Ì‚ð‘Ò‚Â
-            await UniTask.WaitUntilValueChanged(transform, x => x.position);
-        }
+        transform.position += _inputEventProvider.MoveDirection.Value * _moveSpeed;
     }
 
     async UniTask RapidFire(CancellationToken token)
