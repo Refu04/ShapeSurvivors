@@ -47,7 +47,9 @@ public class Enemy : MonoBehaviour
     private void Update()
     {
         //PlayerÇ…å¸Ç©Ç¡ÇƒêiÇ›ë±ÇØÇÈÇÊÇ§Ç…
-        //transform.LookAt(GameManager.Instance.PlayerCore.transform);
-        //transform.position += transform.up * _speed;
+        var dir = GameManager.Instance.PlayerCore.transform.position - transform.position;
+        var angle = Mathf.Atan2(dir.y, dir.x);
+        transform.localEulerAngles = new Vector3(0, 0, angle * Mathf.Rad2Deg);
+        transform.position += transform.right * _speed;
     }
 }

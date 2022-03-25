@@ -58,7 +58,7 @@ public class EnemyManager : MonoBehaviour
         }
         enemy.transform.position = pos;
         //Enemy‰Šú‰»
-        enemy.Init(10, 0.1f);
+        enemy.Init(10, 0.01f);
         //Enemy‚ª€‚Ê‚Ì‚ğ‘Ò‚Â
         await enemy.deadAsync;
         //€‚ñ‚¾‚ç•Ô‹p

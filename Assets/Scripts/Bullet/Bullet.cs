@@ -42,6 +42,9 @@ public class Bullet : MonoBehaviour
     public UniTask deadAsync => _utc.Task;
     private UniTaskCompletionSource _utc;
 
+    //¶‘¶ŠÔƒJƒEƒ“ƒg‚ÌDisposable
+    SingleAssignmentDisposable disposable;
+
     public void Shot(Vector3 pos, Vector3 angle)
     {
         //Task¶¬
@@ -53,7 +56,7 @@ public class Bullet : MonoBehaviour
         //’e‚Ì¶‘¶ŠÔ‚ğƒZƒbƒg‚·‚é
         var lt = _lifeTime;
         //IDisposable‚ğƒLƒƒƒvƒ`ƒƒ‚·‚é
-        var disposable = new SingleAssignmentDisposable();
+        disposable = new SingleAssignmentDisposable();
         disposable.Disposable = this.FixedUpdateAsObservable()
             .Subscribe(_ =>
             {
@@ -64,11 +67,25 @@ public class Bullet : MonoBehaviour
                 //¶‘¶ŠÔ‚ªs‚«‚ê‚Î
                 if (lt <= 0)
                 {
-                    //’e‚Ìõ–½‚ªs‚«‚½‚±‚Æ‚ğ“`‚¦‚é
-                    _utc.TrySetResult();
-                    //w“Ç”jŠü
-                    disposable.Dispose();
+                    Dead();
                 }
             });
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.TryGetComponent(out Enemy enemy))
+        {
+            enemy.HP -= _damage;
+            Dead();
+        }
+    }
+    
+    private void Dead()
+    {
+        //’e‚Ìõ–½‚ªs‚«‚½‚±‚Æ‚ğ“`‚¦‚é
+        _utc.TrySetResult();
+        //w“Ç”jŠü
+        disposable.Dispose();
     }
 }
