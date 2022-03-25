@@ -153,6 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyPrefab: {fileID: 1388299029983630617, guid: ab3706e3165a3164381c26cf6b417dc3, type: 3}
+  _enemyParams:
+  - {fileID: 11400000, guid: ba0f350dfdc8adc4587a6cfcf415e1e1, type: 2}
   _enemyTransform: {fileID: 1863992268}
 --- !u!4 &417272828
 Transform:

@@ -7,6 +7,8 @@ public class EnemyManager : MonoBehaviour
 {
     [SerializeField]
     private Enemy _enemyPrefab;
+    [SerializeField]
+    private EnemyParam[] _enemyParams;
 
     private float _time;
     //弾をまとめるオブジェクト
@@ -28,13 +30,13 @@ public class EnemyManager : MonoBehaviour
             if (_time > 0)
             {
                 await UniTask.Delay(800);
-                InstantiateEnemy(_enemyPrefab).Forget();
+                InstantiateEnemy(_enemyPrefab, _enemyParams[0]).Forget();
             }
         }
         
     }
 
-    async UniTask InstantiateEnemy(Enemy enemyPrefab)
+    async UniTask InstantiateEnemy(Enemy enemyPrefab, EnemyParam param)
     {
         var playerPos = GameManager.Instance.PlayerCore.transform.position;
         //画面外にランダムに生成されるようにする
@@ -58,7 +60,7 @@ public class EnemyManager : MonoBehaviour
         }
         enemy.transform.position = pos;
         //Enemy初期化
-        enemy.Init(10, 0.01f);
+        enemy.Init(param.HP, param.speed);
         //Enemyが死ぬのを待つ
         await enemy.deadAsync;
         //死んだら返却
