@@ -20,6 +20,12 @@ public class GameManager : SingletonGameObject<GameManager>
     //プレイヤーのインスタンス
     private PlayerCore _playerCore; 
 
+    public PlayerCore PlayerCore
+    {
+        get { return _playerCore; }
+        set { _playerCore = value; }
+    }
+
     async void Start()
     {
         // CancellationTokenSourceを生成
@@ -56,7 +62,7 @@ public class GameManager : SingletonGameObject<GameManager>
         //Gameシーンの初期化
         await InitializeGame();
         //Playerが死亡するまで待つ
-        await UniTask.WaitUntil(() => _playerCore.HP <= 0);
+        await _playerCore.DeadAsync;
         //リザルト表示
 
         //ゲームが終わるまで待つ

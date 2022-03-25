@@ -20,12 +20,12 @@ public class PlayerCore : MonoBehaviour
 
     //HP
     [SerializeField]
-    private int _hp;
+    private IntReactiveProperty _hp;
 
     public int HP
     {
-        get { return _hp; }
-        set { _hp = value; }
+        get { return _hp.Value; }
+        set { _hp.Value = value; }
     }
 
     //移動スピード
@@ -51,8 +51,11 @@ public class PlayerCore : MonoBehaviour
     private InputEventProvider _inputEventProvider;
 
     //初期化が完了したことを表すUniTask
-    public UniTask InitializedAsync => _utc.Task;
-    private readonly UniTaskCompletionSource _utc = new UniTaskCompletionSource();
+    public UniTask InitializedAsync => _iniTask.Task;
+    private readonly UniTaskCompletionSource _iniTask = new UniTaskCompletionSource();
+    //初期化が完了したことを表すUniTask
+    public UniTask DeadAsync => _deadTask.Task;
+    private readonly UniTaskCompletionSource _deadTask = new UniTaskCompletionSource();
 
     async void Start()
     {
@@ -74,6 +77,10 @@ public class PlayerCore : MonoBehaviour
     {
         _inputEventProvider = GetComponent<InputEventProvider>();
         _bulletTransform = GameObject.FindGameObjectWithTag("BulletTransform").transform;
+        _hp.AddTo(this);
+        //HPが0以下になれば死亡する
+        _hp.Where(x => x <= 0)
+            .Subscribe(_ => _deadTask.TrySetResult());
         //オブジェクトプールを生成
         _bulletPool = new BulletPool(_bulletTransform, _bullet);
         //破棄されたときにPoolを解放する
@@ -82,13 +89,14 @@ public class PlayerCore : MonoBehaviour
         await UniTask.Yield();
 
         //初期化が終わったらUniTaskを完了させる
-        _utc.TrySetResult();
+        _iniTask.TrySetResult();
     }
 
     private void OnDestroy()
     {
         //破壊されたらキャンセル
-        _utc.TrySetCanceled();
+        _iniTask.TrySetCanceled();
+        _deadTask.TrySetCanceled();
     }
 
     async UniTask Move(CancellationToken token)
