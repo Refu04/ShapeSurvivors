@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 using UniRx;
 using UniRx.Triggers;
 
@@ -17,6 +18,18 @@ public class PlayerCore : MonoBehaviour
         get { return _level; }
         set { _level = value; }
     }
+
+    //所有経験値
+    private IntReactiveProperty _exp = new IntReactiveProperty();
+
+    public int EXP
+    {
+        get { return _exp.Value; }
+        set { _exp.Value = value; }
+    }
+
+    //次のレベルに上がるのに必要な経験値
+    private float _nextLevelEXP;
 
     //HP
     [SerializeField]
@@ -38,6 +51,10 @@ public class PlayerCore : MonoBehaviour
         set { _moveSpeed = value; }
     }
 
+    //プレイヤーのスプライト
+    [SerializeField]
+    private Sprite[] _playerSprites;
+    
     //弾
     [SerializeField]
     private Bullet _bullet;
@@ -53,7 +70,7 @@ public class PlayerCore : MonoBehaviour
     //初期化が完了したことを表すUniTask
     public UniTask InitializedAsync => _iniTask.Task;
     private readonly UniTaskCompletionSource _iniTask = new UniTaskCompletionSource();
-    //初期化が完了したことを表すUniTask
+    //死んだことを表すUniTask
     public UniTask DeadAsync => _deadTask.Task;
     private readonly UniTaskCompletionSource _deadTask = new UniTaskCompletionSource();
 
@@ -78,9 +95,21 @@ public class PlayerCore : MonoBehaviour
         _inputEventProvider = GetComponent<InputEventProvider>();
         _bulletTransform = GameObject.FindGameObjectWithTag("BulletTransform").transform;
         _hp.AddTo(this);
+        //カメラがプレイヤーについてくるようにする
+        GameObject.FindGameObjectWithTag("MainCamera").transform.parent = this.gameObject.transform;
         //HPが0以下になれば死亡する
         _hp.Where(x => x <= 0)
             .Subscribe(_ => _deadTask.TrySetResult());
+        //レベルアップ処理
+        _exp.Value = 0;
+        _nextLevelEXP = 10;
+        _exp.Where(x => x >= _nextLevelEXP && _level < 6)
+            .Subscribe(_ =>
+            {
+                _level += 1;
+                _nextLevelEXP *= 3f;
+                GetComponent<SpriteRenderer>().sprite = _playerSprites[_level - 3];
+            });
         //オブジェクトプールを生成
         _bulletPool = new BulletPool(_bulletTransform, _bullet);
         //破棄されたときにPoolを解放する

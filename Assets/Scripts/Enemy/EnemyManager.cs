@@ -8,19 +8,30 @@ public class EnemyManager : MonoBehaviour
     [SerializeField]
     private Enemy _enemyPrefab;
     [SerializeField]
+    private Gem _gemPrefab;
+    [SerializeField]
     private EnemyParam[] _enemyParams;
+    [SerializeField]
+    private GemParam[] _gemParams;
 
     private float _time;
-    //弾をまとめるオブジェクト
+    //Enemyをまとめるオブジェクト
     [SerializeField]
     private Transform _enemyTransform;
     //Enemyをプールするやつ
     private EnemyPool _enemyPool;
+    //Gemをまとめるオブジェクト
+    [SerializeField]
+    private Transform _gemTransform;
+    //Gemをプールするやつ
+    private GemPool _gemPool;
     // Update is called once per frame
     async void Start()
     {
         //敵オブジェクトのプールを作成
         _enemyPool = new EnemyPool(_enemyTransform, _enemyPrefab);
+        //Gemオブジェクトのプールを作成
+        _gemPool = new GemPool(_gemTransform, _gemPrefab);
         var token = this.GetCancellationTokenOnDestroy();
         //FixedUpdateに切り替える
         await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
@@ -63,7 +74,17 @@ public class EnemyManager : MonoBehaviour
         enemy.Init(param.HP, param.speed);
         //Enemyが死ぬのを待つ
         await enemy.deadAsync;
+        //Gemの生成
+        InstantiateGem(enemy.transform.position, _gemParams[0]).Forget();
         //死んだら返却
         _enemyPool.Return(enemy);
+    }
+
+    async UniTask InstantiateGem(Vector3 pos, GemParam param)
+    {
+        var gem = _gemPool.Rent();
+        gem.Init(pos, param);
+        await gem.DeadAsync;
+        _gemPool.Return(gem);
     }
 }

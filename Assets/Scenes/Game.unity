@@ -123,6 +123,36 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &318498941
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 318498942}
+  m_Layer: 0
+  m_Name: Gems
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &318498942
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318498941}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.9967413, y: -0.36186057, z: -10.210328}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &417272826
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,9 +183,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyPrefab: {fileID: 1388299029983630617, guid: ab3706e3165a3164381c26cf6b417dc3, type: 3}
+  _gemPrefab: {fileID: 1092840558609306478, guid: 8825470f1d388a04aa4a6e2ee35a3741, type: 3}
   _enemyParams:
   - {fileID: 11400000, guid: ba0f350dfdc8adc4587a6cfcf415e1e1, type: 2}
+  _gemParams:
+  - {fileID: 11400000, guid: 87b4e49fe5a43c04b911d78dc051d6a1, type: 2}
   _enemyTransform: {fileID: 1863992268}
+  _gemTransform: {fileID: 318498942}
 --- !u!4 &417272828
 Transform:
   m_ObjectHideFlags: 0
@@ -168,7 +202,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1152224574
 GameObject:
