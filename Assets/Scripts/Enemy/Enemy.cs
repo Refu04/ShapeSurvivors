@@ -52,4 +52,12 @@ public class Enemy : MonoBehaviour
         transform.localEulerAngles = new Vector3(0, 0, angle * Mathf.Rad2Deg);
         transform.position += transform.right * _speed;
     }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag == "Player")
+        {
+            GameManager.Instance.PlayerCore.HP -= 1;
+        }
+    }
 }

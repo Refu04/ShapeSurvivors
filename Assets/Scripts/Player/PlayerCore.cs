@@ -33,7 +33,9 @@ public class PlayerCore : MonoBehaviour
 
     //HP
     [SerializeField]
-    private IntReactiveProperty _hp;
+    private int _maxHP;
+
+    private IntReactiveProperty _hp = new IntReactiveProperty();
 
     public int HP
     {
@@ -54,6 +56,12 @@ public class PlayerCore : MonoBehaviour
     //プレイヤーのスプライト
     [SerializeField]
     private Sprite[] _playerSprites;
+    
+    //HPバー
+    private Image _hpBar;
+
+    //EXPバー
+    private Image _expBar;
     
     //弾
     [SerializeField]
@@ -96,19 +104,36 @@ public class PlayerCore : MonoBehaviour
         _bulletTransform = GameObject.FindGameObjectWithTag("BulletTransform").transform;
         _hp.AddTo(this);
         //カメラがプレイヤーについてくるようにする
-        GameObject.FindGameObjectWithTag("MainCamera").transform.parent = this.gameObject.transform;
+        Camera.main.transform.parent = transform;
+        //HPゲージがプレイヤーについてくるようにする
+        _hpBar = GameObject.FindGameObjectWithTag("HPBar").GetComponent<Image>();
+        this.UpdateAsObservable()
+            .Subscribe(_ =>_hpBar.transform.position =  Camera.main.WorldToScreenPoint(transform.position) - new Vector3(0, 30, 0));
+        //HP初期化
+        _hp.Value = _maxHP;
         //HPが0以下になれば死亡する
         _hp.Where(x => x <= 0)
             .Subscribe(_ => _deadTask.TrySetResult());
+        //HPとHPバー連携
+        _hp.Subscribe(x => {
+            _hpBar.fillAmount = (float)x / (float)_maxHP;
+            Debug.Log(x);
+        });
+        //EXPとEXPバー連携
+        _expBar = GameObject.FindGameObjectWithTag("EXPBar").GetComponent<Image>();
+        _exp.Subscribe(x => {
+            _expBar.fillAmount = x / _nextLevelEXP;
+        });
         //レベルアップ処理
         _exp.Value = 0;
         _nextLevelEXP = 10;
-        _exp.Where(x => x >= _nextLevelEXP && _level < 6)
+        _exp.Where(x => x >= _nextLevelEXP && _level < _playerSprites.Length)
             .Subscribe(_ =>
             {
                 _level += 1;
                 _nextLevelEXP *= 3f;
                 GetComponent<SpriteRenderer>().sprite = _playerSprites[_level - 3];
+                _exp.Value = 0;
             });
         //オブジェクトプールを生成
         _bulletPool = new BulletPool(_bulletTransform, _bullet);

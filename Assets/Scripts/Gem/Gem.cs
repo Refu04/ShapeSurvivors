@@ -34,7 +34,7 @@ public class Gem : MonoBehaviour
                     var dir = player.transform.position - transform.position;
                     var angle = Mathf.Atan2(dir.y, dir.x);
                     transform.localEulerAngles = new Vector3(0, 0, angle * Mathf.Rad2Deg);
-                    transform.position += transform.right * 0.05f;
+                    transform.position += transform.right * 0.09f;
                     if(Vector3.Distance(transform.position, player.transform.position) < 0.2f)
                     {
                         //Œü‚«‚ð–ß‚·

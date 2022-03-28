@@ -180,14 +180,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _level: 3
-  _hp:
-    value: 1
+  _maxHP: 100
   _moveSpeed: 0.05
   _playerSprites:
   - {fileID: 21300000, guid: 8d5adc447b544fa4c91241a18b44ec27, type: 3}
   - {fileID: 21300000, guid: 5bfaf080fe34a5d4fa78eb4ff0ef3a16, type: 3}
   - {fileID: 21300000, guid: 36016c9f0bc8d2c40b530dc01c4d1c04, type: 3}
   - {fileID: 21300000, guid: dd14fb1183e38c140be387ed9ee0a8df, type: 3}
+  - {fileID: 21300000, guid: 0c8b86b0cd19d054897b450051ca0112, type: 3}
+  - {fileID: 21300000, guid: 0cf33090e788c6c44a386ac0f11aaaaf, type: 3}
+  _hpBar: {fileID: 0}
   _bullet: {fileID: -3313956863981532910, guid: 83c922661a552fd428da8f31a9aa93b0, type: 3}
 --- !u!58 &-7756210693804141926
 CircleCollider2D:

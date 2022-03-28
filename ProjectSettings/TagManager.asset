@@ -7,6 +7,8 @@ TagManager:
   - StartButton
   - BulletTransform
   - GetItem
+  - HPBar
+  - EXPBar
   layers:
   - Default
   - TransparentFX

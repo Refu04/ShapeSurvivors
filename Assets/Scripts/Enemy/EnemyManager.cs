@@ -57,16 +57,16 @@ public class EnemyManager : MonoBehaviour
         switch (random)
         {
             case 0:
-                pos = new Vector3(playerPos.x + 10, playerPos.y + Random.Range(-10, 10), 0);
+                pos = new Vector3(playerPos.x + 15, playerPos.y + Random.Range(-15, 15), 0);
                 break;
             case 1:
-                pos = new Vector3(playerPos.x - 10, playerPos.y + Random.Range(-10, 10), 0);
+                pos = new Vector3(playerPos.x - 15, playerPos.y + Random.Range(-15, 15), 0);
                 break;
             case 2:
-                pos = new Vector3(playerPos.x + Random.Range(-10, 10), playerPos.y + 10, 0);
+                pos = new Vector3(playerPos.x + Random.Range(-15, 15), playerPos.y + 15, 0);
                 break;
             case 3:
-                pos = new Vector3(playerPos.x + Random.Range(-10, 10), playerPos.y - 10, 0);
+                pos = new Vector3(playerPos.x + Random.Range(-15, 15), playerPos.y - 15, 0);
                 break;
         }
         enemy.transform.position = pos;
