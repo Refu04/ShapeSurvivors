@@ -11,13 +11,9 @@ public class PlayerCore : MonoBehaviour
 {
     //レベル（頂点の数）
     [SerializeField]
-    private int _level;
+    private IntReactiveProperty _level;
 
-    public int Level
-    {
-        get { return _level; }
-        set { _level = value; }
-    }
+    public IReadOnlyReactiveProperty<int> Level => _level;
 
     //所有経験値
     private IntReactiveProperty _exp = new IntReactiveProperty();
@@ -71,7 +67,27 @@ public class PlayerCore : MonoBehaviour
     private Transform _bulletTransform;
     //弾をプールするやつ
     private BulletPool _bulletPool;
-
+    //スキル
+    private Skill _firstSkill;
+    public Skill FirstSkill
+    {
+        get { return _firstSkill; }
+        set { _firstSkill = value; }
+    }
+    private Skill _secondSkill;
+    public Skill SecondSkill
+    {
+        get { return _secondSkill; }
+        set { _secondSkill = value; }
+    }
+    private Skill _thirdSkill;
+    public Skill ThirdSkill
+    {
+        get { return _thirdSkill; }
+        set { _thirdSkill = value; }
+    }
+    [SerializeField]
+    private Sprite _initIcon;
     //入力イベント
     private InputEventProvider _inputEventProvider;
 
@@ -104,41 +120,52 @@ public class PlayerCore : MonoBehaviour
         _bulletTransform = GameObject.FindGameObjectWithTag("BulletTransform").transform;
         _hp.AddTo(this);
         //カメラがプレイヤーについてくるようにする
-        Camera.main.transform.parent = transform;
+        this.UpdateAsObservable()
+            .Subscribe(_ => Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10)).AddTo(this);
         //HPゲージがプレイヤーについてくるようにする
         _hpBar = GameObject.FindGameObjectWithTag("HPBar").GetComponent<Image>();
         this.UpdateAsObservable()
-            .Subscribe(_ =>_hpBar.transform.position =  Camera.main.WorldToScreenPoint(transform.position) - new Vector3(0, 30, 0));
+            .Subscribe(_ =>_hpBar.transform.position =  Camera.main.WorldToScreenPoint(transform.position) - new Vector3(0, 30, 0)).AddTo(this);
         //HP初期化
         _hp.Value = _maxHP;
         //HPが0以下になれば死亡する
         _hp.Where(x => x <= 0)
-            .Subscribe(_ => _deadTask.TrySetResult());
+            .Subscribe(_ => _deadTask.TrySetResult()).AddTo(this);
         //HPとHPバー連携
         _hp.Subscribe(x => {
             _hpBar.fillAmount = (float)x / (float)_maxHP;
-            Debug.Log(x);
-        });
+        }).AddTo(this);
         //EXPとEXPバー連携
         _expBar = GameObject.FindGameObjectWithTag("EXPBar").GetComponent<Image>();
         _exp.Subscribe(x => {
             _expBar.fillAmount = x / _nextLevelEXP;
-        });
+        }).AddTo(this);
         //レベルアップ処理
         _exp.Value = 0;
         _nextLevelEXP = 10;
-        _exp.Where(x => x >= _nextLevelEXP && _level < _playerSprites.Length)
+        _exp.Where(x => x >= _nextLevelEXP && _level.Value < _playerSprites.Length)
             .Subscribe(_ =>
             {
-                _level += 1;
+                _level.Value += 1;
                 _nextLevelEXP *= 3f;
-                GetComponent<SpriteRenderer>().sprite = _playerSprites[_level - 3];
+                GetComponent<SpriteRenderer>().sprite = _playerSprites[_level.Value - 3];
                 _exp.Value = 0;
-            });
+            }).AddTo(this);
+        //スキル初期化
+        _firstSkill = new Skill(99, _initIcon, this);
+        _secondSkill = new Skill(99, _initIcon, this);
+        _thirdSkill = new Skill(99, _initIcon, this);
+        //スキル入力処理
+        _inputEventProvider.FirstSkill
+                           .Subscribe(_ => _firstSkill.Fire());
+        _inputEventProvider.SecondSkill
+                           .Subscribe(_ => _secondSkill.Fire());
+        _inputEventProvider.ThirdSkill
+                           .Subscribe(_ => _thirdSkill.Fire());
         //オブジェクトプールを生成
         _bulletPool = new BulletPool(_bulletTransform, _bullet);
         //破棄されたときにPoolを解放する
-        this.OnDestroyAsObservable().Subscribe(_ => _bulletPool.Dispose());
+        this.OnDestroyAsObservable().Subscribe(_ => _bulletPool.Dispose()).AddTo(this);
 
         await UniTask.Yield();
 
@@ -164,10 +191,11 @@ public class PlayerCore : MonoBehaviour
 
     async UniTask RapidFire(CancellationToken token)
     {
+        
         while (true)
         {
             await UniTask.Delay(300);
-            for (int i = 0; i < _level; i++)
+            for (int i = 0; i < _level.Value; i++)
             {
                 Shot(token, i).Forget();
             }
@@ -176,13 +204,15 @@ public class PlayerCore : MonoBehaviour
 
     async UniTask Shot(CancellationToken token, int num)
     {
+        
         //プールから弾を１つ取得
         var bullet = _bulletPool.Rent();
         //弾を撃つ
-        bullet.Shot(transform.position, new Vector3(0, 0, 360 / _level * num));
+        bullet.Shot(transform.position, transform.localEulerAngles + new Vector3(0, 0, 360 / _level.Value * num));
         //弾が死ぬのを待つ
         await bullet.deadAsync;
         //弾の返却
         _bulletPool.Return(bullet);
+        
     }
 }

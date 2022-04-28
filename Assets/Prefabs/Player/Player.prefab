@@ -179,7 +179,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6073f8a926f0f484ca6f1382ee36f59f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _level: 3
+  _level:
+    value: 3
   _maxHP: 100
   _moveSpeed: 0.05
   _playerSprites:
@@ -189,8 +190,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: dd14fb1183e38c140be387ed9ee0a8df, type: 3}
   - {fileID: 21300000, guid: 0c8b86b0cd19d054897b450051ca0112, type: 3}
   - {fileID: 21300000, guid: 0cf33090e788c6c44a386ac0f11aaaaf, type: 3}
-  _hpBar: {fileID: 0}
   _bullet: {fileID: -3313956863981532910, guid: 83c922661a552fd428da8f31a9aa93b0, type: 3}
+  _initIcon: {fileID: 0}
 --- !u!58 &-7756210693804141926
 CircleCollider2D:
   m_ObjectHideFlags: 0
